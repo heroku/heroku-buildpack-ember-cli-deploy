@@ -14,7 +14,10 @@ assert('compile') do
       assert_true status.success?, "buildpack compile did not exit properly"
       assert_true File.exist?("#{work_dir}/tmp/deploy-dist"), "ember dist directory does not exist"
       assert_true File.exist?("#{work_dir}/static.json"), "did not detect static.json"
-      assert_equal "tmp/deploy-dist", JSON.parse(File.read("#{work_dir}/static.json"))["root"]
+
+      json = JSON.parse(File.read("#{work_dir}/static.json"))
+      assert_equal "tmp/deploy-dist", ["root"]
+      assert_true json["routes"]
     end
   end
 end

@@ -38,7 +38,7 @@ module Buildpack
           @output_io.topic "Building ember assets"
           pipe("ember deploy production")
 
-          contents = static_json_contents
+          contents = default_static_json
           if contents
             @output_io.topic "Writing static.json"
             File.open(STATIC_JSON, 'w') do |file|
@@ -49,19 +49,24 @@ module Buildpack
       end
 
       private
-      def static_json_contents
+      def default_static_json
         # TODO catch if JSON isn't valid
         json = File.exist?(STATIC_JSON) ? JSON.parse(File.read(STATIC_JSON)) : {}
-        if json['root']
+
+        if json.include?('root') && json.include?('routes')
           nil
         else
-          json['root'] = DEFAULT_EMBER_CLI_DEPLOY_DIR
+          json['root'] ||= DEFAULT_EMBER_CLI_DEPLOY_DIR
+          json['routes'] ||= {
+            '/**' => 'index.html'
+          }
           JSON.generate(json, {
             :pretty_print => true,
             :indent       => 2
           })
         end
       end
+
     end
   end
 end
