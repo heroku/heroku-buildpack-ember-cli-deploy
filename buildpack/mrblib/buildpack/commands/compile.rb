@@ -5,8 +5,10 @@ module Buildpack
     class Compile
       include Buildpack::Shell
 
-      STATIC_JSON = "static.json"
+      STATIC_JSON                  = "static.json"
+      PACKAGE_JSON                 = "package.json"
       DEFAULT_EMBER_CLI_DEPLOY_DIR = "tmp/deploy-dist"
+      DEFAULT_EMBER_CLI_DIR        = "dist"
 
       def self.detect(options)
         options["compile"]
@@ -36,9 +38,16 @@ module Buildpack
           end
 
           @output_io.topic "Building ember assets"
-          pipe("ember deploy production")
+          ember_cli_deploy =
+            if dependencies["ember-cli-deploy"]
+              pipe("ember deploy production")
+              true
+            else
+              pipe("ember build --environment production")
+              false
+            end
 
-          contents = default_static_json
+          contents = default_static_json(ember_cli_deploy)
           if contents
             @output_io.topic "Writing static.json"
             File.open(STATIC_JSON, 'w') do |file|
@@ -49,14 +58,14 @@ module Buildpack
       end
 
       private
-      def default_static_json
+      def default_static_json(ember_cli_deploy = false)
         # TODO catch if JSON isn't valid
         json = File.exist?(STATIC_JSON) ? JSON.parse(File.read(STATIC_JSON)) : {}
 
         if json.include?('root') && json.include?('routes')
           nil
         else
-          json['root'] ||= DEFAULT_EMBER_CLI_DEPLOY_DIR
+          json['root'] ||= ember_cli_deploy ? DEFAULT_EMBER_CLI_DEPLOY_DIR : DEFAULT_EMBER_CLI_DIR
           json['routes'] ||= {
             '/**' => 'index.html'
           }
@@ -65,6 +74,15 @@ module Buildpack
             :indent       => 2
           })
         end
+      end
+
+      def dependencies
+        unless @modules
+          json     = JSON.parse(File.read(PACKAGE_JSON))
+          @modules = (json["devDependencies"] || {}).merge(json["dependencies"] || {})
+        end
+
+        @modules
       end
 
     end

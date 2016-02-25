@@ -20,6 +20,8 @@ module Buildpack::Commands
 
       if dependencies["ember-cli-deploy"]
         puts "ember-cli-deploy"
+      elsif dependencies["ember-cli"]
+        puts "ember-cli"
       else
         exit 1
       end

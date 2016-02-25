@@ -1,8 +1,15 @@
 assert('detect ember-cli-deploy') do
-  output, status = Support.run_bin('detect', Support.fixtures("github-issues-demo"))
+  output, status = Support.run_bin('detect', Support.fixtures("github-issues-demo-deploy"))
 
   assert_true status.success?
   assert_include output, "ember-cli-deploy"
+end
+
+assert('detect ember-cli app') do
+  output, status = Support.run_bin('detect', Support.fixtures("github-issues-demo"))
+
+  assert_true status.success?
+  assert_include output, "ember-cli"
 end
 
 assert('not ember-cli-deploy app') do
