@@ -18,6 +18,9 @@ MRuby::Build.new do |conf|
   conf.enable_test
 
   gem_config(conf)
+  # needed by mruby-tempfile
+  conf.gem core: 'mruby-time'
+  conf.gem mgem: 'mruby-simple-random'
 end
 
 MRuby::Build.new('x86_64-pc-linux-gnu') do |conf|
