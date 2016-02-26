@@ -16,8 +16,6 @@ MRuby::Build.new do |conf|
   conf.enable_bintest
   conf.enable_debug
   conf.enable_test
-  conf.linker.flags << "-static-libstdc++"
-  conf.linker.flags << "-static-libgcc"
 
   gem_config(conf)
 end
@@ -25,8 +23,9 @@ end
 MRuby::Build.new('x86_64-pc-linux-gnu') do |conf|
   toolchain :gcc
 
-  conf.linker.flags << "-static-libstdc++"
-  conf.linker.flags << "-static-libgcc"
+  ["-static-libgcc", "-static-libstdc++"].each do |flag|
+    conf.linker.flags << flag
+  end
 
   gem_config(conf)
 end
