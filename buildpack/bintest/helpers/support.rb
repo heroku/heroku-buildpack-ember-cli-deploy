@@ -7,7 +7,7 @@ module Support
 
   class <<self
     def run_bin(*options)
-      Open3.capture2(BIN_PATH, *options)
+      Open3.capture3(BIN_PATH, *options)
     end
 
     def fixtures(path)

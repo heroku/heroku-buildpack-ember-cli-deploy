@@ -8,7 +8,7 @@ assert('compile ember-cli-deploy') do
     Dir.chdir(dir) do
       FileUtils.cp_r(Support.fixtures(app), dir)
       work_dir = "#{dir}/#{app}"
-      output, status = Support.run_bin('compile', work_dir, '/tmp', '/tmp')
+      output, error, status = Support.run_bin('compile', work_dir, cache_dir, '/tmp')
 
       assert_true status.success?, "buildpack compile did not exit properly"
       assert_true File.exist?("#{work_dir}/tmp/deploy-dist"), "ember dist directory does not exist"
@@ -28,7 +28,7 @@ assert('compile ember-cli') do
     Dir.chdir(dir) do
       FileUtils.cp_r(Support.fixtures(app), dir)
       work_dir = "#{dir}/#{app}"
-      output, status = Support.run_bin('compile', work_dir, '/tmp', '/tmp')
+      output, error, status = Support.run_bin('compile', work_dir, '/tmp', '/tmp')
 
       assert_true status.success?, "buildpack compile did not exit properly"
       assert_true File.exist?("#{work_dir}/dist"), "ember dist directory does not exist"
