@@ -7,6 +7,7 @@ module Buildpack
 
       STATIC_JSON  = "static.json"
       PACKAGE_JSON = "package.json"
+      BOWER_DIR    = "bower_components"
 
       def self.detect(options)
         options["compile"]
@@ -18,6 +19,7 @@ module Buildpack
         @build_dir = build_dir
         @cache_dir = cache_dir
         @env_dir   = env_dir
+        @cache     = Cache.new(@build_dir, @cache_dir)
       end
 
       def run
@@ -27,8 +29,11 @@ module Buildpack
             pipe("npm install -g bower")
           end
 
+          @output_io.topic "Restoring bower cache" if @cache.load(BOWER_DIR, ".")
           @output_io.topic "Installing bower dependencies"
           pipe("bower --allow-root install")
+          @output_io.topic "Caching bower cache"
+          @cache.store(BOWER_DIR)
 
           unless command_success?("ember version 2> /dev/null")
             @output_io.topic "Installing ember-cli"
