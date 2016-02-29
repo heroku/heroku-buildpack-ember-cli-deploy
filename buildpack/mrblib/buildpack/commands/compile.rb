@@ -5,6 +5,8 @@ module Buildpack
     class Compile
       include Buildpack::Shell
 
+      EmberBuildTuple = Struct.new(:deploy, :command, :output_dir)
+
       STATIC_JSON  = "static.json"
       PACKAGE_JSON = "package.json"
       BOWER_DIR    = "bower_components"
@@ -40,17 +42,20 @@ module Buildpack
             pipe("npm install -g ember-cli")
           end
 
-          @output_io.topic "Building ember assets"
-          ember_cli_deploy =
+          tuple =
             if dependencies["ember-cli-deploy"]
-              pipe("ember deploy production")
-              true
+              EmberBuildTuple.new(true, "ember deploy production", StaticConfig::DEFAULT_EMBER_CLI_DEPLOY_DIR)
             else
-              pipe("ember build --environment production")
-              false
+              EmberBuildTuple.new(false, "ember build --environment production", StaticConfig::DEFAULT_EMBER_CLI_DIR)
             end
 
-          exit 1 unless DefaultStaticConfig.new(@output_io, @error_io).write(STATIC_JSON, ember_cli_deploy)
+          $output_io.puts "Loading old ember assets" if @cache.load("assets", tuple.output_dir)
+          @output_io.topic "Building ember assets"
+          pipe(tuple.command)
+          @output_io.topic "Caching ember assets"
+          @cache.store("#{tuple.output_dir}/assets")
+
+          exit 1 unless DefaultStaticConfig.new(@output_io, @error_io).write(STATIC_JSON, tuple.deploy)
         end
       end
 

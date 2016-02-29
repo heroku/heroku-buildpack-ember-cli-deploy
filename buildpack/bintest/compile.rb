@@ -16,6 +16,7 @@ assert('compile ember-cli-deploy') do
       assert_true File.exist?("#{work_dir}/tmp/deploy-dist"), "ember dist directory does not exist"
       assert_true File.exist?("#{work_dir}/static.json"), "did not detect static.json"
       assert_false output.include?("Restoring bower cache")
+      assert_false output.include?("Loading old ember assets")
 
       json = JSON.parse(File.read("#{work_dir}/static.json"))
       assert_equal "tmp/deploy-dist", json["root"]
@@ -26,6 +27,7 @@ assert('compile ember-cli-deploy') do
       output, error, status = Support.run_bin('compile', work_dir, cache_dir, '/tmp')
       assert_true status.success?, "buildpack compile did not exit properly"
       assert_true output.include?("Restoring bower cache")
+      assert_true output.include?("Loading old ember assets")
     end
   end
 end
@@ -45,6 +47,7 @@ assert('compile ember-cli') do
       assert_true File.exist?("#{work_dir}/dist"), "ember dist directory does not exist"
       assert_true File.exist?("#{work_dir}/static.json"), "did not detect static.json"
       assert_false output.include?("Restoring bower cache")
+      assert_false output.include?("Loading old ember assets")
 
       json = JSON.parse(File.read("#{work_dir}/static.json"))
       assert_equal "dist", json["root"]
@@ -55,6 +58,7 @@ assert('compile ember-cli') do
       output, error, status = Support.run_bin('compile', work_dir, cache_dir, '/tmp')
       assert_true status.success?, "buildpack compile did not exit properly"
       assert_true output.include?("Restoring bower cache")
+      assert_true output.include?("Loading old ember assets")
     end
   end
 end

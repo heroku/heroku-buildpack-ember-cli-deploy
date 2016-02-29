@@ -5,6 +5,7 @@ MRuby::Gem::Specification.new('buildpack') do |spec|
   spec.bins    = ['buildpack']
 
   spec.add_dependency 'mruby-exit',             core: 'mruby-exit'
+  spec.add_dependency 'mruby-struct',           core: 'mruby-struct'
   spec.add_dependency 'mruby-dir',              mgem: 'mruby-dir'
   spec.add_dependency 'mruby-iijson',           mgem: 'mruby-iijson'
   spec.add_dependency 'mruby-set',              mgem: 'mruby-set'
