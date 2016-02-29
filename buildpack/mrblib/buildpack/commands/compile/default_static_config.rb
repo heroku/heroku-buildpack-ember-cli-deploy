@@ -11,9 +11,9 @@ class Buildpack::Commands::Compile::DefaultStaticConfig
       File.open(config_path, 'w') do |file|
         file.puts contents
       end
-
-      true
     end
+
+    true
   rescue JSON::ParserError => e
     @error_io.puts "static.json is not valid JSON"
     false
