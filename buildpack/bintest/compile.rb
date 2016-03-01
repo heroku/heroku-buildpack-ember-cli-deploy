@@ -17,6 +17,7 @@ assert('compile ember-cli-deploy') do
       assert_true File.exist?("#{work_dir}/static.json"), "did not detect static.json"
       assert_false output.include?("Restoring bower cache")
       assert_false output.include?("Loading old ember assets")
+      assert_true Dir.exist?("#{cache_dir}/bower_components")
 
       json = JSON.parse(File.read("#{work_dir}/static.json"))
       assert_equal "tmp/deploy-dist", json["root"]
@@ -48,6 +49,7 @@ assert('compile ember-cli') do
       assert_true File.exist?("#{work_dir}/static.json"), "did not detect static.json"
       assert_false output.include?("Restoring bower cache")
       assert_false output.include?("Loading old ember assets")
+      assert_true Dir.exist?("#{cache_dir}/bower_components")
 
       json = JSON.parse(File.read("#{work_dir}/static.json"))
       assert_equal "dist", json["root"]

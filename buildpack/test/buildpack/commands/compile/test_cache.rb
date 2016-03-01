@@ -2,8 +2,10 @@ class TestCache < MTest::Unit::TestCase
   Cache = Buildpack::Commands::Compile::Cache
 
   def setup
-    @build_dir = generate_dir("build")
-    @cache_dir = generate_dir("cache")
+    @build_dir           = generate_dir("build")
+    @cache_dir           = generate_dir("cache")
+    @buildpack_cache_dir = "#{@cache_dir}/#{Cache::BUILDPACK_CACHE_DIR}"
+    @cache               = Cache.new(@build_dir, @cache_dir)
   end
 
   def teardown
@@ -25,23 +27,27 @@ class TestCache < MTest::Unit::TestCase
       file.puts "baz"
     end
 
-    cache = Cache.new(@build_dir, @cache_dir)
-    assert_true cache.load("foo.txt", ".")
+    assert_true @cache.load("foo.txt", ".")
     assert_equal "foo", File.read("#{@build_dir}/foo.txt").chomp
 
     FileUtilsSimple.mkdir_p("#{@build_dir}/slam")
-    assert_true cache.load("bar", "slam")
+    assert_true @cache.load("bar", "slam")
     assert_equal "baz", File.read("#{@build_dir}/slam/bar/baz.txt").chomp
   end
 
   def test_load_empty
-    cache = Cache.new(@build_dir, @cache_dir)
-    assert_false cache.load("foo", ".")
+    assert_false @cache.load("foo", ".")
   end
 
   def test_store
     cacheable_dir = "#{@build_dir}/foo"
     FileUtilsSimple.mkdir_p(cacheable_dir)
+    File.open("#{cacheable_dir}/foo.txt", "w") do |file|
+      file.print "foo"
+    end
+
+    @cache.store("foo")
+    assert_equal "foo", File.read("#{@buildpack_cache_dir}/foo/foo.txt")
   end
 
   private
