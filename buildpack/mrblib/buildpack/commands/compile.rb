@@ -49,11 +49,11 @@ module Buildpack
               EmberBuildTuple.new(false, "ember build --environment production", StaticConfig::DEFAULT_EMBER_CLI_DIR)
             end
 
-          $output_io.puts "Loading old ember assets" if @cache.load("assets", tuple.output_dir)
           @output_io.topic "Building ember assets"
           pipe(tuple.command)
+          @output_io.topic "Loading old ember assets" if @cache.load(tuple.output_dir.split("/").last, ".", false)
           @output_io.topic "Caching ember assets"
-          @cache.store("#{tuple.output_dir}/assets")
+          @cache.store(tuple.output_dir)
 
           exit 1 unless DefaultStaticConfig.new(@output_io, @error_io).write(STATIC_JSON, tuple.deploy)
         end

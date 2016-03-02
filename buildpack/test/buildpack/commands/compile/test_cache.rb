@@ -39,6 +39,28 @@ class TestCache < MTest::Unit::TestCase
     assert_false @cache.load("foo", ".")
   end
 
+  def test_load_override
+    asset_dir = "#{@build_dir}/dist"
+    FileUtilsSimple.mkdir_p(asset_dir)
+    File.open("#{asset_dir}/foo.txt", "w") do |file|
+      file.print "foo"
+    end
+    File.open("#{asset_dir}/bar.txt", "w") do |file|
+      file.print "bar"
+    end
+    @cache.store("dist")
+
+    FileUtilsSimple.rm_rf(asset_dir)
+    FileUtilsSimple.mkdir_p(asset_dir)
+    File.open("#{asset_dir}/bar.txt", "w") do |file|
+      file.print "baz"
+    end
+    @cache.load("dist", ".", false)
+
+    assert_equal "foo", File.read("#{asset_dir}/foo.txt")
+    assert_equal "baz", File.read("#{asset_dir}/bar.txt")
+  end
+
   def test_store
     cacheable_dir = "#{@build_dir}/foo"
     FileUtilsSimple.mkdir_p(cacheable_dir)

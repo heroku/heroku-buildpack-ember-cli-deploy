@@ -6,11 +6,12 @@ class Buildpack::Commands::Compile::Cache
     @cache_dir = "#{cache_dir}/#{BUILDPACK_CACHE_DIR}"
   end
 
-  def load(dir, path)
-    src = "#{@cache_dir}/#{dir}"
+  def load(dir, path, override = true)
+    src     = "#{@cache_dir}/#{dir}"
+    options = override ? "" : "-n"
 
     if File.exist?(src)
-      FileUtilsSimple.cp_r(src, "#{@build_dir}/#{path}")
+      FileUtilsSimple.cp_r(src, "#{@build_dir}/#{path}", options)
       true
     else
       false
