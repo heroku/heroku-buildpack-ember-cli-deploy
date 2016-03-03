@@ -1,5 +1,6 @@
 require 'tmpdir'
 require 'json'
+require_relative 'helpers/support'
 
 assert('compile ember-cli-deploy') do
   app = "github-issues-demo-deploy"

@@ -1,3 +1,5 @@
+require_relative 'helpers/support'
+
 assert('detect ember-cli-deploy') do
   output, error, status = Support.run_bin('detect', Support.fixtures("github-issues-demo-deploy"))
 
