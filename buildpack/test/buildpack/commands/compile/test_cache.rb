@@ -70,6 +70,12 @@ class TestCache < MTest::Unit::TestCase
 
     @cache.store("foo")
     assert_equal "foo", File.read("#{@buildpack_cache_dir}/foo/foo.txt")
+
+    @cache.store("foo", "boo")
+    assert_equal "foo", File.read("#{@buildpack_cache_dir}/boo/foo/foo.txt")
+
+    @cache.store("foo", "baz/bar")
+    assert_equal "foo", File.read("#{@buildpack_cache_dir}/baz/bar/foo/foo.txt")
   end
 
   private

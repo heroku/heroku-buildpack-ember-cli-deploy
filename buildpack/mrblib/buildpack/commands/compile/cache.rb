@@ -6,7 +6,7 @@ class Buildpack::Commands::Compile::Cache
     @cache_dir = "#{cache_dir}/#{BUILDPACK_CACHE_DIR}"
   end
 
-  def load(dir, path, override = true)
+  def load(dir, path = ".", override = true)
     src     = "#{@cache_dir}/#{dir}"
     options = override ? "" : "-n"
 
@@ -18,8 +18,8 @@ class Buildpack::Commands::Compile::Cache
     end
   end
 
-  def store(dir)
-    FileUtilsSimple.mkdir_p(@cache_dir)
-    FileUtilsSimple.cp_r("#{@build_dir}/#{dir}", "#{@cache_dir}/")
+  def store(dir, destination = ".")
+    FileUtilsSimple.mkdir_p("#{@cache_dir}/#{destination}")
+    FileUtilsSimple.cp_r("#{@build_dir}/#{dir}", "#{@cache_dir}/#{destination}/")
   end
 end
