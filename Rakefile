@@ -26,3 +26,24 @@ task :publish, [:name] => :stage do |t, args|
     sh "heroku buildkits:publish #{args[:name]}"
   end
 end
+
+namespace :dev do
+  desc "Publish dev build of buildpack to https://buildkits.herokuapp.com"
+  task :publish, [:name] do |t, args|
+    cwd  = File.dirname(__FILE__)
+
+    Dir.chdir("buildpack") do
+      sh "docker-compose run compile"
+    end
+
+    Dir.mktmpdir do |dir|
+      Dir.chdir(dir) do
+        FileUtils.mkdir_p("vendor")
+        FileUtils.cp("#{cwd}/buildpack/mruby/build/x86_64-pc-linux-gnu/bin/buildpack", "vendor")
+        FileUtils.cp_r("#{cwd}/bin", ".")
+        sh "heroku buildkits:publish #{args[:name]}"
+      end
+    end
+
+  end
+end
