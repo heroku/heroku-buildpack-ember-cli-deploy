@@ -1,2 +1,5 @@
 buildpack/mruby/
 buildpack/fixtures/
+buildpack/vendor/bundle
+buildpack/.bundle
+buildpack/spec/examples.txt
