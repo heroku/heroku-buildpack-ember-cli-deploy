@@ -21,7 +21,7 @@ module Buildpack
         @error_io  = error_io
         @build_dir = build_dir
         @cache_dir = cache_dir
-        @env_dir   = env_dir
+        @env       = Env.create(env_dir)
         @cache     = Cache.new(@build_dir, @cache_dir)
       end
 
@@ -29,18 +29,18 @@ module Buildpack
         Dir.chdir(@build_dir) do
           unless command_success?("bower -v 2> /dev/null")
             @output_io.topic "Installing bower"
-            pipe("npm install -g bower")
+            pipe("npm install -g bower", @output_io, @env)
           end
 
           @output_io.topic "Restoring bower cache" if @cache.load(BOWER_DIR, ".")
           @output_io.topic "Installing bower dependencies"
-          pipe("bower --allow-root install")
+          pipe("bower --allow-root install", @output_io, @env)
           @output_io.topic "Caching bower cache"
           @cache.store(BOWER_DIR)
 
           unless command_success?("ember version 2> /dev/null")
             @output_io.topic "Installing ember-cli"
-            pipe("npm install -g ember-cli")
+            pipe("npm install -g ember-cli", @output_io, @env)
           end
 
           tuple =
@@ -51,7 +51,7 @@ module Buildpack
             end
 
           @output_io.topic "Building ember assets"
-          pipe(tuple.command)
+          pipe(tuple.command, @output_io, @env)
           cache_load_tuple = cache_load_dirs(tuple.output_dir)
           @output_io.topic "Loading old ember assets" if @cache.load(cache_load_tuple.cache_src, cache_load_tuple.build_dest, false)
           @output_io.topic "Caching ember assets"
@@ -64,7 +64,7 @@ module Buildpack
                 "tmp/fastboot-dist"
               else
                 @output_io.topic "Building ember fastboot assets"
-                pipe("ember fastboot:build --environment production")
+                pipe("ember fastboot:build --environment production", @output_io, @env)
                 "fastboot-dist"
               end
 
@@ -72,7 +72,7 @@ module Buildpack
             cache_load_tuple = cache_load_dirs(fastboot_node_modules_cache)
             @output_io.topic "Restoring fastboot dependencies" if @cache.load(cache_load_tuple.cache_src, cache_load_tuple.build_dest)
             @output_io.topic "Installing fastboot dependencies"
-            pipe("cd #{fastboot_dist} && npm install")
+            pipe("cd #{fastboot_dist} && npm install", @output_io, @env)
             @cache.store("#{fastboot_dist}/node_modules", "fastboot-dist")
 
             release_yml = {
