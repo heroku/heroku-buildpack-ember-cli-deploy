@@ -1,5 +1,6 @@
 require 'tmpdir'
 require 'json'
+require_relative 'helpers/support'
 
 Tuple = Struct.new(:app, :output_path)
 

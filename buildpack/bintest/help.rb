@@ -1,3 +1,5 @@
+require_relative 'helpers/support'
+
 assert('-h') do
   output, error, status = Support.run_bin('-h')
 
