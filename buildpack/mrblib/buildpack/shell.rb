@@ -20,6 +20,16 @@ module Buildpack
       $?
     end
 
+    def pipe_exit_on_error(command, output_io = @output_io, error_io = @error_io, env = nil)
+      status = pipe(command, output_io, env)
+      if status.success?
+        status
+      else
+        @error_io.puts "Error running: #{command}"
+        exit 1
+      end
+    end
+
     def command_success?(command)
       _, status = system(command)
       status.success?
