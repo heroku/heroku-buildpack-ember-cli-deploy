@@ -30,8 +30,8 @@ module Buildpack
       end
     end
 
-    def command_success?(command)
-      _, status = system(command)
+    def command_success?(command, env = nil)
+      _, status = system(command_to_string(command, env))
       status.success?
     end
 
