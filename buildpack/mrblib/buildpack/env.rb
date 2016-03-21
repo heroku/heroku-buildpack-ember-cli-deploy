@@ -2,6 +2,7 @@ module Buildpack
   class Env
     def self.create(env_dir)
       env = {}
+      return env unless Dir.exist?(env_dir)
 
       Dir.foreach(env_dir) do |file|
         fullpath = "#{env_dir}/#{file}"

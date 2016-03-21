@@ -19,6 +19,10 @@ class TestEnv < MTest::Unit::TestCase
     end
   end
 
+  def test_create_no_env_dir
+    assert_equal Hash.new, Env.create("/foo/bar")
+  end
+
   private
   def mktmpdir(name)
     tmpfile = Tempfile.new(name)
