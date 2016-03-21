@@ -40,7 +40,7 @@ module Buildpack
       if env
         env_string = env.map {|key, value| "#{Shellwords.shellescape(key)}=#{Shellwords.shellescape(value)}" }.join(" ")
 
-        "/usr/bin/env #{env_string} #{command}"
+        "/usr/bin/env #{env_string} bash -c '#{command}'"
       else
         command
       end
