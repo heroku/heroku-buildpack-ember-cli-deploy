@@ -1,5 +1,5 @@
 # heroku-buildpack-ember-cli-deploy
-**NOTE**: This buildpack is in [private beta](https://devcenter.heroku.com/articles/heroku-beta-features#private-beta). If you have Ember.js on Heroku feedback, please [submit some](http://help.heroku.com/new/single-page-apps).
+**NOTE**: This buildpack is an experimental OSS project. If you have Ember.js on Heroku feedback, please [submit some](http://help.heroku.com/new/single-page-apps).
 
 You probably want to be using the [emberjs buildpack](https://github.com/heroku/heroku-buildpack-emberjs) unless you're composing buildpacks by hand manually.
 
