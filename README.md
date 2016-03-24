@@ -1,7 +1,7 @@
 # heroku-buildpack-ember-cli-deploy
 **NOTE**: This buildpack is in [private beta](https://devcenter.heroku.com/articles/heroku-beta-features#private-beta). If you have Ember.js on Heroku feedback, please [submit some](http://help.heroku.com/new/single-page-apps).
 
-You probably want to be using the [emberjs buildpack](https://github.com/hone/heroku-buildpack-emberjs) unless you're composing buildpacks by hand manually.
+You probably want to be using the [emberjs buildpack](https://github.com/heroku/heroku-buildpack-emberjs) unless you're composing buildpacks by hand manually.
 
 ## Intro
 
@@ -12,21 +12,21 @@ This is a [Heroku Buildpack](http://devcenter.heroku.com/articles/buildpacks) th
 This buildpack has a binary component, so it needs to be compiled beforehand. It's easiest just to use the buildpack with the prebuilt binary.
 
 ```
-$ heroku buildpacks:set https://codon-buildpacks.s3.amazonaws.com/buildpacks/hone/ember-cli-deploy.tgz
+$ heroku buildpacks:set https://codon-buildpacks.s3.amazonaws.com/buildpacks/heroku/ember-cli-deploy.tgz
 ```
 
-You'll need both `npm` and `node` setup before using this buildpack. I recommend checking out [heroku-buildpack-nodejs](https://github.com/heroku/heroku-buildpack-nodejs). In addition, if not using fastboot, you'll need a way to serve the assets. [heroku-buildpack-static](https://github.com/hone/heroku-buildpack-static) can help there. When not using fastboot, the buildpack will generate a default [`static.json`](https://github.com/hone/heroku-buildpack-static#configuration) for you.
+You'll need both `npm` and `node` setup before using this buildpack. I recommend checking out [heroku-buildpack-nodejs](https://github.com/heroku/heroku-buildpack-nodejs). In addition, if not using fastboot, you'll need a way to serve the assets. [heroku-buildpack-static](https://github.com/heroku/heroku-buildpack-static) can help there. When not using fastboot, the buildpack will generate a default [`static.json`](https://github.com/heroku/heroku-buildpack-static#configuration) for you.
 
 An example of setting your app to advantage of all these pieces for a standard (non fastboot)  Ember.js application, you can do something like this:
 
 ```
 $ heroku buildpacks:clear
 $ heroku buildpacks:add heroku/nodejs
-$ heroku buildpacks:add https://codon-buildpacks.s3.amazonaws.com/buildpacks/hone/ember-cli-deploy.tgz
-$ heroku buildpacks:add https://github.com/hone/heroku-buildpack-static
+$ heroku buildpacks:add https://codon-buildpacks.s3.amazonaws.com/buildpacks/heroku/ember-cli-deploy.tgz
+$ heroku buildpacks:add https://github.com/heroku/heroku-buildpack-static
 ```
 
-Again, you probably want to be using the [emberjs buildpack](https://github.com/hone/heroku-buildpack-emberjs).
+Again, you probably want to be using the [emberjs buildpack](https://github.com/heroku/heroku-buildpack-emberjs).
 
 ## Contributing
 
