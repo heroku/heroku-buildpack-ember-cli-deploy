@@ -59,25 +59,17 @@ module Buildpack
 
           if dependencies["ember-cli-fastboot"]
             @output_io.topic "ember fastboot detected"
-            fastboot_dist =
-              if dependencies["ember-cli-deploy-fastboot-build"]
-                "tmp/fastboot-dist"
-              else
-                @output_io.topic "Building ember fastboot assets"
-                pipe_exit_on_error("ember fastboot:build --environment production", @output_io, @error_io, @env)
-                "fastboot-dist"
-              end
-
-            fastboot_node_modules_cache = "#{fastboot_dist}/node_modules"
-            cache_load_tuple = cache_load_dirs(fastboot_node_modules_cache)
+            fastboot_node_modules_cache = "dist/node_modules"
+            cache_load_tuple            = cache_load_dirs(fastboot_node_modules_cache)
             @output_io.topic "Restoring fastboot dependencies" if @cache.load(cache_load_tuple.cache_src, cache_load_tuple.build_dest)
             @output_io.topic "Installing fastboot dependencies"
-            pipe_exit_on_error("cd #{fastboot_dist} && npm install", @output_io, @error_io, @env)
-            @cache.store("#{fastboot_dist}/node_modules", "fastboot-dist")
+            pipe_exit_on_error("cd #{tuple.output_dir} && npm install", @output_io, @error_io, @env)
+            @output_io.topic "Caching fastboot dependencies"
+            @cache.store(fastboot_node_modules_cache, cache_load_tuple.build_dest)
 
             release_yml = {
               "default_process_types" => {
-                "web" => "ember fastboot --environment production --build false --port $PORT --output-path #{fastboot_dist} --assets-path #{tuple.output_dir} --serve-assets"
+                "web" => "ember fastboot --environment production --build false --port $PORT --output-path #{tuple.output_dir} --assets-path #{tuple.output_dir} --serve-assets"
               }
             }
             FileUtilsSimple.mkdir_p("#{@build_dir}/tmp")
@@ -107,7 +99,7 @@ module Buildpack
 
         if output_parts.size > 1
           build_dest = output_parts.dup.tap {|o| o.pop }.join("/")
-          cache_src  = output_parts.dup.tap {|o| o.shift }.join("/")
+          cache_src  = local_dir
         else
           build_dest = "."
           cache_src = output_parts.last
