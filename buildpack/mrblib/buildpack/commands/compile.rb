@@ -6,7 +6,7 @@ module Buildpack
       include Buildpack::Shell
 
       EmberBuildTuple = Struct.new(:deploy, :command, :output_dir)
-      CacheLoadTuple  = Struct.new(:build_dest, :cache_src)
+      CacheTuple      = Struct.new(:source, :destination)
 
       STATIC_JSON  = "static.json"
       PACKAGE_JSON = "package.json"
@@ -52,20 +52,20 @@ module Buildpack
 
           @output_io.topic "Building ember assets"
           pipe_exit_on_error(tuple.command, @output_io, @error_io, @env)
-          cache_load_tuple = cache_load_dirs(tuple.output_dir)
-          @output_io.topic "Loading old ember assets" if @cache.load(cache_load_tuple.cache_src, cache_load_tuple.build_dest, false)
+          cache_tuple = cache_dirs(tuple.output_dir)
+          @output_io.topic "Loading old ember assets" if @cache.load(cache_tuple.source, cache_tuple.destination, false)
           @output_io.topic "Caching ember assets"
           @cache.store(tuple.output_dir)
 
           if dependencies["ember-cli-fastboot"]
             @output_io.topic "ember fastboot detected"
             fastboot_node_modules_cache = "dist/node_modules"
-            cache_load_tuple            = cache_load_dirs(fastboot_node_modules_cache)
-            @output_io.topic "Restoring fastboot dependencies" if @cache.load(cache_load_tuple.cache_src, cache_load_tuple.build_dest)
+            cache_tuple                 = cache_dirs(fastboot_node_modules_cache)
+            @output_io.topic "Restoring fastboot dependencies" if @cache.load(cache_tuple.source, cache_tuple.destination)
             @output_io.topic "Installing fastboot dependencies"
             pipe_exit_on_error("cd #{tuple.output_dir} && npm install", @output_io, @error_io, @env)
             @output_io.topic "Caching fastboot dependencies"
-            @cache.store(fastboot_node_modules_cache, cache_load_tuple.build_dest)
+            @cache.store(cache_tuple.source, cache_tuple.destination)
 
             release_yml = {
               "default_process_types" => {
@@ -92,20 +92,20 @@ module Buildpack
         @modules
       end
 
-      def cache_load_dirs(local_dir)
+      def cache_dirs(local_dir)
         output_parts = local_dir.split("/")
-        build_dest   = nil
-        cache_src    = nil
+        destination  = nil
+        source       = nil
 
         if output_parts.size > 1
-          build_dest = output_parts.dup.tap {|o| o.pop }.join("/")
-          cache_src  = local_dir
+          destination  = output_parts.dup.tap {|o| o.pop }.join("/")
+          source  = local_dir
         else
-          build_dest = "."
-          cache_src = output_parts.last
+          destination = "."
+          source = output_parts.last
         end
 
-        CacheLoadTuple.new(build_dest, cache_src)
+        CacheTuple.new(source, destination)
       end
 
     end
