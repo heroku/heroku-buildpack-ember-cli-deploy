@@ -69,7 +69,7 @@ module Buildpack
 
             release_yml = {
               "default_process_types" => {
-                "web" => "ember fastboot --environment production --build false --port $PORT --output-path #{tuple.output_dir} --assets-path #{tuple.output_dir} --serve-assets"
+                "web" => "ember-fastboot #{tuple.output_dir} --serve-assets-from #{tuple.output_dir} --port $PORT"
               }
             }
             FileUtilsSimple.mkdir_p("#{@build_dir}/tmp")
