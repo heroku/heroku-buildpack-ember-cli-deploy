@@ -19,8 +19,8 @@ module Buildpack
       def initialize(output_io, error_io, build_dir, cache_dir, env_dir)
         @output_io = output_io
         @error_io  = error_io
-        @build_dir = build_dir
-        @cache_dir = cache_dir
+        @build_dir = build_dir.chomp("/")
+        @cache_dir = cache_dir.chomp("/")
         @env       = Env.create(env_dir)
         @cache     = Cache.new(@build_dir, @cache_dir)
       end
@@ -55,17 +55,16 @@ module Buildpack
           cache_tuple = cache_dirs(tuple.output_dir)
           @output_io.topic "Loading old ember assets" if @cache.load(cache_tuple.source, cache_tuple.destination, false)
           @output_io.topic "Caching ember assets"
-          @cache.store(tuple.output_dir)
+          @cache.store(tuple.output_dir, ".")
 
           if dependencies["ember-cli-fastboot"]
             @output_io.topic "ember fastboot detected"
-            fastboot_node_modules_cache = "dist/node_modules"
-            cache_tuple                 = cache_dirs(fastboot_node_modules_cache)
-            @output_io.topic "Restoring fastboot dependencies" if @cache.load(cache_tuple.source, cache_tuple.destination)
+            cache_tuple = CacheTuple.new("fastboot", tuple.output_dir)
+            @output_io.topic "Restoring fastboot dependencies" if @cache.load("#{cache_tuple.source}/node_modules", cache_tuple.destination)
             @output_io.topic "Installing fastboot dependencies"
             pipe_exit_on_error("cd #{tuple.output_dir} && npm install", @output_io, @error_io, @env)
             @output_io.topic "Caching fastboot dependencies"
-            @cache.store(cache_tuple.source, cache_tuple.destination)
+            @cache.store("#{cache_tuple.destination}/node_modules", cache_tuple.source)
 
             release_yml = {
               "default_process_types" => {
@@ -98,8 +97,8 @@ module Buildpack
         source       = nil
 
         if output_parts.size > 1
-          destination  = output_parts.dup.tap {|o| o.pop }.join("/")
-          source  = local_dir
+          destination = output_parts.dup.tap {|o| o.pop }.join("/")
+          source      = output_parts.dup.tap {|o| o.shift }.join("/")
         else
           destination = "."
           source = output_parts.last
