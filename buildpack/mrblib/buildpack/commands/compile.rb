@@ -53,11 +53,9 @@ module Buildpack
           @output_io.topic "Building ember assets"
           pipe_exit_on_error("#{tuple.command} 2>&1", @output_io, @error_io, @env)
           cache_tuple = cache_dirs(tuple.output_dir)
-          @output_io.topic "Loading old ember assets" if @cache.load("dist", cache_tuple.destination, false)
-          FileUtilsSimple.mv("#{@build_dir}/dist", "#{@build_dir}/deploy-dist") if dependencies["ember-cli-deploy"]
+          @output_io.topic "Loading old ember assets" if @cache.load(cache_tuple.source, cache_tuple.destination, false)
           @output_io.topic "Caching ember assets"
           @cache.store(tuple.output_dir, ".")
-          @cache.mv("deploy-dist", "dist") if dependencies["ember-cli-deploy"]
 
           if dependencies["ember-cli-fastboot"]
             @output_io.topic "ember fastboot detected"

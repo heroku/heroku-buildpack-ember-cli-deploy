@@ -43,7 +43,7 @@ RSpec.describe "compile" do
     Dir.mkdir(cache_dir)
     Dir.mkdir(env_dir)
     work_dir = "#{tmpdir}/#{tuple.app}"
-    cache_output_path = "dist"
+    cache_output_path = tuple.output_path.split("/").last
     FileUtils.cp_r(fixtures(tuple.app), tmpdir)
 
     output, _, status = run_bin('compile', work_dir, cache_dir, env_dir)
