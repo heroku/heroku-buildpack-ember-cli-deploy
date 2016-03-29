@@ -34,7 +34,7 @@ module Buildpack
 
           @output_io.topic "Restoring bower cache" if @cache.load(BOWER_DIR, ".")
           @output_io.topic "Installing bower dependencies"
-          pipe_exit_on_error("bower --allow-root install", @output_io, @error_io, @env)
+          pipe_exit_on_error("bower --allow-root install 2>&1", @output_io, @error_io, @env)
           @output_io.topic "Caching bower cache"
           @cache.store(BOWER_DIR)
 
@@ -51,9 +51,9 @@ module Buildpack
             end
 
           @output_io.topic "Building ember assets"
-          pipe_exit_on_error(tuple.command, @output_io, @error_io, @env)
+          pipe_exit_on_error("#{tuple.command} 2>&1", @output_io, @error_io, @env)
           cache_tuple = cache_dirs(tuple.output_dir)
-          @output_io.topic "Loading old ember assets" if @cache.load(cache_tuple.source, cache_tuple.destination, false)
+          @output_io.topic "Loading old ember assets" if @cache.load("dist", cache_tuple.destination, false)
           FileUtilsSimple.mv("#{@build_dir}/dist", "#{@build_dir}/deploy-dist") if dependencies["ember-cli-deploy"]
           @output_io.topic "Caching ember assets"
           @cache.store(tuple.output_dir, ".")
@@ -64,7 +64,7 @@ module Buildpack
             cache_tuple = CacheTuple.new("fastboot", tuple.output_dir)
             @output_io.topic "Restoring fastboot dependencies" if @cache.load("#{cache_tuple.source}/node_modules", cache_tuple.destination)
             @output_io.topic "Installing fastboot dependencies"
-            pipe_exit_on_error("cd #{tuple.output_dir} && npm install", @output_io, @error_io, @env)
+            pipe_exit_on_error("cd #{tuple.output_dir} && npm install 2>&1", @output_io, @error_io, @env)
             @output_io.topic "Caching fastboot dependencies"
             @cache.store("#{cache_tuple.destination}/node_modules", cache_tuple.source)
 
