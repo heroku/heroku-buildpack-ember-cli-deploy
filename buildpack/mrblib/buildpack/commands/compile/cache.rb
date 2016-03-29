@@ -22,4 +22,8 @@ class Buildpack::Commands::Compile::Cache
     FileUtilsSimple.mkdir_p("#{@cache_dir}/#{destination}")
     FileUtilsSimple.cp_r("#{@build_dir}/#{dir}", "#{@cache_dir}/#{destination}/")
   end
+
+  def mv(src, destination)
+    FileUtilsSimple.mv("#{@cache_dir}/#{src}", "#{@cache_dir}/#{destination}")
+  end
 end
