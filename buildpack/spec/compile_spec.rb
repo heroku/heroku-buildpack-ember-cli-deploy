@@ -27,6 +27,39 @@ RSpec.describe "compile" do
     end
   end
 
+  it "should clear bower cache if bower.json changes" do
+    Dir.mktmpdir do |tmpdir|
+      Dir.chdir(tmpdir) do
+        tuple = Tuple.new("github-issues-demo", "dist")
+
+        cache_dir = "#{tmpdir}/cache"
+        env_dir   = "#{tmpdir}/env"
+        Dir.mkdir(cache_dir)
+        Dir.mkdir(env_dir)
+        File.open("#{env_dir}/FASTLY_CDN_URL", "w") do |file|
+          "limitless-caverns-12345.global.ssl.fastly.net"
+        end
+        work_dir = "#{tmpdir}/#{tuple.app}"
+        FileUtils.cp_r(fixtures(tuple.app), tmpdir)
+
+        output, _, status = run_bin('compile', work_dir, cache_dir, env_dir)
+        bower_md5_path = "#{cache_dir}/ember-cli-deploy/checksums/bower.json"
+        expect(File.exist?(bower_md5_path)).to be(true)
+        old_md5 = File.read(bower_md5_path)
+
+        FileUtils.rm_rf(work_dir)
+        FileUtils.cp_r(fixtures(tuple.app), tmpdir)
+        File.open("#{work_dir}/bower.json", "a") do |file|
+          file.puts "   "
+        end
+        output, _, status = run_bin('compile', work_dir, cache_dir, env_dir)
+        expect(output).not_to include("Restoring bower cache")
+        expect(output).to include("bower.json changes detected, clearing cache")
+        expect(old_md5).not_to eq(File.read(bower_md5_path))
+      end
+    end
+  end
+
   def assert_compile(tmpdir, type)
     tuple =
       case type

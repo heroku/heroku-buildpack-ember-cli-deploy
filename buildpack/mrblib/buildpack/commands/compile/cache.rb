@@ -22,4 +22,17 @@ class Buildpack::Commands::Compile::Cache
     FileUtilsSimple.mkdir_p("#{@cache_dir}/#{destination}")
     FileUtilsSimple.cp_r("#{@build_dir}/#{dir}", "#{@cache_dir}/#{destination}/")
   end
+
+  def read(path)
+    cache_path = "#{@cache_dir}/#{path}"
+    File.read(cache_path) if File.exist?(cache_path)
+  end
+
+  def exist?(path)
+    File.exist?("#{@cache_dir}/#{path}")
+  end
+
+  def rm(path)
+    FileUtilsSimple.rm("#{@cache_dir}/#{path}")
+  end
 end

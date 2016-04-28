@@ -78,6 +78,41 @@ class TestCache < MTest::Unit::TestCase
     assert_equal "foo", File.read("#{@buildpack_cache_dir}/baz/bar/foo/foo.txt")
   end
 
+  def test_read
+    cacheable_dir = "#{@build_dir}/foo"
+    FileUtilsSimple.mkdir_p("#{cacheable_dir}")
+    File.open("#{cacheable_dir}/foo.txt", "w") do |file|
+      file.print "foo"
+    end
+
+    @cache.store("foo")
+    assert_equal "foo", @cache.read("foo/foo.txt")
+  end
+
+  def test_exist
+    cacheable_dir = "#{@build_dir}/foo"
+    FileUtilsSimple.mkdir_p("#{cacheable_dir}")
+    File.open("#{cacheable_dir}/foo.txt", "w") do |file|
+      file.print "foo"
+    end
+
+    @cache.store("foo")
+    assert_true @cache.exist?("foo/foo.txt")
+    assert_false @cache.exist?("foo/bar.txt")
+  end
+
+  def test_rm
+    cacheable_dir = "#{@build_dir}/foo"
+    FileUtilsSimple.mkdir_p("#{cacheable_dir}")
+    File.open("#{cacheable_dir}/foo.txt", "w") do |file|
+      file.print "foo"
+    end
+
+    @cache.store("foo")
+    @cache.rm("foo/foo.txt")
+    assert_false @cache.exist?("foo/foo.txt")
+  end
+
   private
   def generate_dir(name)
     tmpfile = Tempfile.new(name)
