@@ -19,7 +19,7 @@ RSpec.describe "compile" do
     end
   end
 
-  xit "should compile a fastboot build app" do
+  it "should compile a fastboot build app" do
     Dir.mktmpdir do |dir|
       Dir.chdir(dir) do
         assert_compile(dir, "ember-cli-deploy-fastboot-build")
@@ -42,6 +42,9 @@ RSpec.describe "compile" do
     env_dir   = "#{tmpdir}/env"
     Dir.mkdir(cache_dir)
     Dir.mkdir(env_dir)
+    File.open("#{env_dir}/FASTLY_CDN_URL", "w") do |file|
+      "limitless-caverns-12345.global.ssl.fastly.net"
+    end
     work_dir = "#{tmpdir}/#{tuple.app}"
     cache_output_path = tuple.output_path.split("/").last
     FileUtils.cp_r(fixtures(tuple.app), tmpdir)
@@ -55,8 +58,8 @@ RSpec.describe "compile" do
     expect(Dir.exist?("#{cache_dir}/ember-cli-deploy/#{cache_output_path}")).to be true
 
     if type.include?("fastboot")
-      expect(output).to include("Restoring fastboot dependencies")
-      expect(Dir.exist?("#{cache_dir}/ember-cli-deploy/fastboot-dist/node_modules")).to be true
+      expect(output).not_to include("Restoring fastboot dependencies")
+      expect(Dir.exist?("#{cache_dir}/ember-cli-deploy/fastboot/node_modules")).to be true
     else
       expect(File.exist?("#{work_dir}/static.json")).to be true
       json = JSON.parse(File.read("#{work_dir}/static.json"))
