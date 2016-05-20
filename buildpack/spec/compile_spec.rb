@@ -19,10 +19,32 @@ RSpec.describe "compile" do
     end
   end
 
-  it "should compile a fastboot build app" do
+  it "should compile an older fastboot build app" do
     Dir.mktmpdir do |dir|
       Dir.chdir(dir) do
         assert_compile(dir, "ember-cli-deploy-fastboot-build")
+      end
+    end
+  end
+
+  it "should setup the fastboot-cli for newer fastboot apps" do
+    Dir.mktmpdir do |tmpdir|
+      Dir.chdir(tmpdir) do
+        tuple = Tuple.new("fastboot-cli", "dist")
+
+        cache_dir = "#{tmpdir}/cache"
+        env_dir   = "#{tmpdir}/env"
+        Dir.mkdir(cache_dir)
+        Dir.mkdir(env_dir)
+        File.open("#{env_dir}/FASTLY_CDN_URL", "w") do |file|
+          "limitless-caverns-12345.global.ssl.fastly.net"
+        end
+        work_dir = "#{tmpdir}/#{tuple.app}"
+        FileUtils.cp_r(fixtures(tuple.app), tmpdir)
+
+        output, _, status = run_bin('compile', work_dir, cache_dir, env_dir)
+        expect(output).to include("installing fastboot-cli")
+        expect(status).to be_success
       end
     end
   end

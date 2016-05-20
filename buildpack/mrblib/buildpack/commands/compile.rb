@@ -58,6 +58,10 @@ module Buildpack
             @output_io.topic "Caching fastboot dependencies"
             @cache.store("#{cache_tuple.destination}/node_modules", cache_tuple.source)
 
+            unless command_success?("node_modules/.bin/ember-fastboot 2> /dev/null")
+              @output_io.topic "ember-fastboot command not detected, installing fastboot-cli"
+              pipe_exit_on_error("npm install fastboot-cli", @output_io, @error_io, @env)
+            end
             release_yml = {
               "default_process_types" => {
                 "web" => "ember-fastboot #{tuple.output_dir} --serve-assets-from #{tuple.output_dir} --port $PORT"
