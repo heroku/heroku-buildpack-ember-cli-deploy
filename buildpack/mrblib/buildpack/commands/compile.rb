@@ -26,6 +26,8 @@ module Buildpack
 
       def run
         Dir.chdir(@build_dir) do
+          @env["EMBER_ENV"] ||= "production"
+
           Bower.new(@output_io, @error_io, @cache).install
 
           unless command_success?("ember version 2> /dev/null")
@@ -35,9 +37,9 @@ module Buildpack
 
           tuple =
             if dependencies["ember-cli-deploy"]
-              EmberBuildTuple.new(true, "ember deploy production", StaticConfig::DEFAULT_EMBER_CLI_DEPLOY_DIR)
+              EmberBuildTuple.new(true, "ember deploy #{@env["EMBER_ENV"]}", StaticConfig::DEFAULT_EMBER_CLI_DEPLOY_DIR)
             else
-              EmberBuildTuple.new(false, "ember build --environment production", StaticConfig::DEFAULT_EMBER_CLI_DIR)
+              EmberBuildTuple.new(false, "ember build", StaticConfig::DEFAULT_EMBER_CLI_DIR)
             end
 
           @output_io.topic "Building ember assets"
