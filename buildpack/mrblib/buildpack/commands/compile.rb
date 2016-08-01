@@ -37,7 +37,7 @@ module Buildpack
 
           tuple =
             if dependencies["ember-cli-deploy"]
-              EmberBuildTuple.new(true, "ember deploy #{@env["EMBER_ENV"]}", StaticConfig::DEFAULT_EMBER_CLI_DEPLOY_DIR)
+              EmberBuildTuple.new(true, "ember deploy #{Shellwords.escape(@env["EMBER_ENV"])}", StaticConfig::DEFAULT_EMBER_CLI_DEPLOY_DIR)
             else
               EmberBuildTuple.new(false, "ember build", StaticConfig::DEFAULT_EMBER_CLI_DIR)
             end
