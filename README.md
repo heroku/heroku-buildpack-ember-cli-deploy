@@ -5,7 +5,7 @@ You probably want to be using the [emberjs buildpack](https://github.com/heroku/
 
 ## Intro
 
-This is a [Heroku Buildpack](http://devcenter.heroku.com/articles/buildpacks) that handles the logic for building [Ember.js](http://emberjs.com/) and [ember-cli-fastboot](https://github.com/tildeio/ember-cli-fastboot) applications. It can leverage [ember-cli-deploy](http://ember-cli.com/ember-cli-deploy/) to allow you to customize your build process on Heroku. If ember-cli-deploy is not detected, the buildpack will run a standard `ember build --environment production`.
+This is a [Heroku Buildpack](http://devcenter.heroku.com/articles/buildpacks) that handles the logic for building [Ember.js](http://emberjs.com/) and [ember-cli-fastboot](https://github.com/tildeio/ember-cli-fastboot) applications. It can leverage [ember-cli-deploy](http://ember-cli-deploy.com/) to allow you to customize your build process on Heroku. If ember-cli-deploy is not detected, the buildpack will run a standard `ember build --environment production`.
 
 ## Usage
 
