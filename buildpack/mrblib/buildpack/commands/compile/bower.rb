@@ -11,6 +11,11 @@ class Buildpack::Commands::Compile::Bower
   end
 
   def install
+    unless File.exist?(BOWER_JSON)
+      @output_io.topic "Skipping installing bower dependencies, no bower.json detected."
+      return
+    end
+
     unless command_success?("bower -v 2> /dev/null")
       @output_io.topic "Installing bower"
       pipe_exit_on_error("npm install -g bower", @output_io, @error_io, @env)
