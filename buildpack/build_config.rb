@@ -7,6 +7,7 @@ def gem_config(conf)
   conf.gem github: 'hone/mruby-process', branch: 'header'
   # needed by mruby-iijson
   conf.gem core: 'mruby-sprintf'
+  conf.gem github: 'mattn/mruby-onig-regexp', checksum_hash: '4873e87fc1842e8e2a417f6071b63a7d91523ef4'
   conf.enable_cxx_abi
 end
 
