@@ -25,7 +25,7 @@ module Buildpack
       if status.success?
         status
       else
-        @error_io.puts "Error running: #{command}"
+        error_io.puts "Error running: #{command}" if error_io
         exit 1
       end
     end

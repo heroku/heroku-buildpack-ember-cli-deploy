@@ -13,6 +13,8 @@ Usage:
   buildpack detect <build-dir>
   buildpack compile <build-dir> <cache-dir> <env-dir>
   buildpack release <build-dir>
+  buildpack test-compile <build-dir> <cache-dir> <env-dir>
+  buildpack test <build-dir> <env-dir>
   buildpack (-v | --version)
   buildpack (-h | --help)
 
@@ -42,6 +44,10 @@ USAGE
         Compile.new(@output_io, @error_io, @options["<build-dir>"], @options["<cache-dir>"], @options["<env-dir>"]).run
       elsif Release.detect(@options)
         Release.new(@output_io, @error_io, @options["<build-dir>"]).run
+      elsif TestCompile.detect(@options)
+        TestCompile.new(@output_io, @error_io, @options["<build-dir>"], @options["<cache-dir>"], @options["<env-dir>"]).run
+      elsif Test.detect(@options)
+        Test.new(@output_io, @error_io, @options["<build-dir>"], @options["<env-dir>"]).run
       else
         Help.new(@output_io).run
       end
