@@ -31,8 +31,10 @@ class Buildpack::Commands::Compile::Bower
     @output_io.topic "Restoring bower cache" if @cache.load(BOWER_DIR, ".") && !bower_cache_stale?
     @output_io.topic "Installing bower dependencies"
     pipe_exit_on_error("bower --allow-root install 2>&1", @output_io, @error_io, @env)
-    @output_io.topic "Caching bower cache"
-    @cache.store(BOWER_DIR)
+    if Dir.exist?(BOWER_DIR)
+      @output_io.topic "Caching bower cache"
+      @cache.store(BOWER_DIR)
+    end
 
     FileUtilsSimple.mkdir_p("checksums")
     File.open("checksums/#{BOWER_JSON}", "w") {|file| file.puts MD5::md5_hex(File.read(BOWER_JSON)) }
