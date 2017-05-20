@@ -21,8 +21,19 @@ module Buildpack
       end
 
       def run
-        @output_io.topic "Installing phantomjs"
-        pipe_exit_on_error("npm install -g phantomjs-prebuilt", @output_io, @error_io, @env)
+        @output_io.topic "Detecting testem browsers"
+        json = `node vendor/testem_broswers.js #{@build_dir}`
+        if !json.chomp.empty?
+          browsers = JSON.parse(json)["browsers"]
+          if browsers.include?("PhantomJS")
+            @output_io.topic "Installing PhantomJS"
+            pipe_exit_on_error("npm install -g phantomjs-prebuilt", @output_io, @error_io, @env)
+          end
+
+          if browsers.include?("Chrome")
+            @output_io.topic "Install headless Chrome"
+          end
+        end
       end
     end
   end
