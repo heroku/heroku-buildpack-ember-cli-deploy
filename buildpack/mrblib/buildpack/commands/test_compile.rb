@@ -58,11 +58,17 @@ MSG
             exit 1
           end
 
+          dependencies = Dependencies.new(@build_dir)
+
           if browsers.include?("PhantomJS")
-            @output_io.topic "Installing PhantomJS"
-            phantomjs_output_log = "phantomjs_output.log"
-            status = pipe("npm install -g phantomjs-prebuilt 2>&1 1>#{phantomjs_output_log}", @output_io, @env)
-            @error_io.puts File.read(phantomjs_output_log) if !status.success?
+            if dependencies["phantomjs-prebuilt"]
+              @output_io.topic "Skipping PhantomJS, already installed."
+            else
+              @output_io.topic "Installing PhantomJS"
+              phantomjs_output_log = "phantomjs_output.log"
+              status = pipe("npm install -g phantomjs-prebuilt 2>&1 1>#{phantomjs_output_log}", @output_io, @env)
+              @error_io.puts File.read(phantomjs_output_log) if !status.success?
+            end
           end
 
           if browsers.include?("Chrome")
