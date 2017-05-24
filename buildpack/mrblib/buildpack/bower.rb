@@ -1,4 +1,8 @@
-class Buildpack::Commands::Compile::Bower
+module Buildpack
+  module Shell; end
+end
+
+class Buildpack::Bower
   include Buildpack::Shell
 
   BOWER_JSON   = "bower.json"

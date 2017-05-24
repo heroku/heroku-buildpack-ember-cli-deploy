@@ -22,6 +22,10 @@ module Buildpack
       end
 
       def run
+        Dir.chdir(@build_dir) do
+          Bower.new(@output_io, @error_io, @cache).install
+        end
+
         @output_io.topic "Detecting testem browsers"
 
         content = nil
