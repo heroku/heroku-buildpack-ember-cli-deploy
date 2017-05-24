@@ -14,6 +14,7 @@ module Buildpack
         @error_io  = error_io
         @build_dir = build_dir.chomp("/")
         @cache_dir = cache_dir.chomp("/")
+        @env_dir   = env_dir
         @env       = Env.create(env_dir)
         # remove PATH, since sprettur sets PATH and overrides any exports from the node buildpack
         @env.delete("PATH")
@@ -22,16 +23,47 @@ module Buildpack
 
       def run
         @output_io.topic "Detecting testem browsers"
-        json = `node vendor/testem_broswers.js #{@build_dir}`
-        if !json.chomp.empty?
-          browsers = JSON.parse(json)["browsers"]
+
+        content = nil
+        config = ["testem.json", ".testem.json", "testem.yml", ".testem.yml"].detect {|file| File.exist?("#{@build_dir}/#{file}") }
+        if config
+          content = File.read("#{@build_dir}/#{config}")
+        else
+          content, status = system("node vendor/testem_browsers.js #{@build_dir} 2>&1")
+          if !status.success?
+            @output.puts "No testem config found."
+            exit 1
+          end
+        end
+
+        if !content.chomp.empty?
+          browsers =
+            (
+              if config && config.split(".").last == "yml"
+                YAML.load(content)
+              else
+                JSON.parse(content)
+              end
+            )["launch_in_ci"]
+
+          if browsers.nil? || browsers.empty?
+            @output_io.print <<MSG
+No browsers detected.
+Add 'PhantomJS' or 'Chrome' in your testem config
+MSG
+            exit 1
+          end
+
           if browsers.include?("PhantomJS")
             @output_io.topic "Installing PhantomJS"
-            pipe_exit_on_error("npm install -g phantomjs-prebuilt", @output_io, @error_io, @env)
+            phantomjs_output_log = "phantomjs_output.log"
+            status = pipe("npm install -g phantomjs-prebuilt 2>&1 1>#{phantomjs_output_log}", @output_io, @env)
+            @error_io.puts File.read(phantomjs_output_log) if !status.success?
           end
 
           if browsers.include?("Chrome")
-            @output_io.topic "Install headless Chrome"
+            @output_io.topic "Installing headless Chrome"
+            GitBuildpackRunner.new(@output_io, @error_io, "heroku/heroku-buildpack-google-chrome").compile(@build_dir, @cache_dir, @env_dir)
           end
         end
       end

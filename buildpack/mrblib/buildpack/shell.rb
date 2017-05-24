@@ -35,6 +35,17 @@ module Buildpack
       status.success?
     end
 
+    def mktmpdir(name = "fetcher")
+      tmpfile = Tempfile.new(name)
+      dir = tmpfile.path
+      tmpfile.unlink
+
+      FileUtilsSimple.mkdir_p(dir)
+      yield dir
+    ensure
+      FileUtilsSimple.rm_rf(dir) if File.exist?(dir)
+    end
+
     private
     def command_to_string(command, env)
       if env

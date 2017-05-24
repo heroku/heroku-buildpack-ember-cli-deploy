@@ -41,7 +41,7 @@ namespace :dev do
         FileUtils.mkdir_p("vendor")
         FileUtils.cp("#{cwd}/buildpack/mruby/build/x86_64-pc-linux-gnu/bin/buildpack", "vendor")
         FileUtils.cp_r("#{cwd}/bin", ".")
-        FileUtils.cp("#{cwd}/vendor/testem_broswers.js", "vendor")
+        FileUtils.cp("#{cwd}/vendor/testem_browsers.js", "vendor")
         sh "heroku buildkits:publish #{args[:name]}"
       end
     end
