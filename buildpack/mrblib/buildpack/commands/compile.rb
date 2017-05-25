@@ -33,6 +33,8 @@ module Buildpack
             pipe_exit_on_error("npm install -g ember-cli", @output_io, @error_io, @env)
           end
 
+          dependencies = Dependencies.new(@build_dir)
+
           tuple =
             if dependencies["ember-cli-deploy"]
               EmberBuildTuple.new(true, "ember deploy production", StaticConfig::DEFAULT_EMBER_CLI_DEPLOY_DIR)
@@ -76,15 +78,6 @@ module Buildpack
       end
 
       private
-      def dependencies
-        unless @modules
-          json     = JSON.parse(File.read(PACKAGE_JSON))
-          @modules = (json["devDependencies"] || {}).merge(json["dependencies"] || {})
-        end
-
-        @modules
-      end
-
       def cache_dirs(local_dir)
         output_parts = local_dir.split("/")
         destination  = nil

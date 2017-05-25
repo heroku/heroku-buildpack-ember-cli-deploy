@@ -25,7 +25,7 @@ module Buildpack
       if status.success?
         status
       else
-        @error_io.puts "Error running: #{command}"
+        error_io.puts "Error running: #{command}" if error_io
         exit 1
       end
     end
@@ -33,6 +33,17 @@ module Buildpack
     def command_success?(command, env = nil)
       _, status = system(command_to_string(command, env))
       status.success?
+    end
+
+    def mktmpdir(name = "fetcher")
+      tmpfile = Tempfile.new(name)
+      dir = tmpfile.path
+      tmpfile.unlink
+
+      FileUtilsSimple.mkdir_p(dir)
+      yield dir
+    ensure
+      FileUtilsSimple.rm_rf(dir) if File.exist?(dir)
     end
 
     private

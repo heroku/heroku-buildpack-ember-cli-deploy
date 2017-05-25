@@ -11,12 +11,9 @@ module Buildpack::Commands
     end
 
     def run
-      package_json = "#{@build_dir}/package.json"
+      dependencies = Dependencies.new(@build_dir)
 
-      exit 1 if !File.exist?(package_json)
-
-      json         = JSON.parse(File.read(package_json))
-      dependencies = (json["devDependencies"] || {}).merge(json["dependencies"] || {})
+      exit 1 if !dependencies.valid?
 
       if dependencies["ember-cli-deploy"]
         puts "ember-cli-deploy"
