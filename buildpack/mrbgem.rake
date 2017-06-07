@@ -11,6 +11,7 @@ MRuby::Gem::Specification.new('buildpack') do |spec|
   spec.add_dependency 'mruby-iijson',           mgem: 'mruby-iijson'
   spec.add_dependency 'mruby-md5',              mgem: 'mruby-md5'
   spec.add_dependency 'mruby-set',              mgem: 'mruby-set'
+  spec.add_dependency 'mruby-shellwords',       mgem: 'mruby-shellwords'
   spec.add_dependency 'mruby-tempfile',         mgem: 'tempfile'
   spec.add_dependency 'mruby-docopt',           github: 'hone/mruby-docopt'
   spec.add_dependency 'mruby-fileutils-simple', github: 'hone/mruby-fileutils-simple'

@@ -34,12 +34,14 @@ module Buildpack
           end
 
           dependencies = Dependencies.new(@build_dir)
+          ember_env = Shellwords.escape(@env.fetch("EMBER_ENV", StaticConfig::DEFAULT_EMBER_ENV))
 
           tuple =
             if dependencies["ember-cli-deploy"]
-              EmberBuildTuple.new(true, "ember deploy production", StaticConfig::DEFAULT_EMBER_CLI_DEPLOY_DIR)
+              ember_cli_deploy_target = Shellwords.escape(@env.fetch("EMBER_CLI_DEPLOY_TARGET", ember_env))
+              EmberBuildTuple.new(true, "ember deploy #{ember_cli_deploy_target}", StaticConfig::DEFAULT_EMBER_CLI_DEPLOY_DIR)
             else
-              EmberBuildTuple.new(false, "ember build --environment production", StaticConfig::DEFAULT_EMBER_CLI_DIR)
+              EmberBuildTuple.new(false, "ember build --environment #{ember_env}", StaticConfig::DEFAULT_EMBER_CLI_DEPLOY_DIR)
             end
 
           @output_io.topic "Building ember assets"

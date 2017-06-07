@@ -2,6 +2,7 @@ module Buildpack
   class StaticConfig
     DEFAULT_EMBER_CLI_DEPLOY_DIR = "tmp/deploy-dist"
     DEFAULT_EMBER_CLI_DIR        = "dist"
+    DEFAULT_EMBER_ENV            = "production"
     WRITEABLE_KEYS               = Set.new(%w(root routes))
 
     def initialize(contents = "{}", ember_cli_deploy = false)
