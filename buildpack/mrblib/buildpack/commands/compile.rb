@@ -34,9 +34,10 @@ module Buildpack
           end
 
           dependencies = Dependencies.new(@build_dir)
+          use_ember_cli_deploy = ENV.fetch("EMBER_CLI_DEPLOY", true);
 
           tuple =
-            if dependencies["ember-cli-deploy"]
+            if dependencies["ember-cli-deploy"] && use_ember_cli_deploy
               EmberBuildTuple.new(true, "ember deploy production", StaticConfig::DEFAULT_EMBER_CLI_DEPLOY_DIR)
             else
               EmberBuildTuple.new(false, "ember build --environment production", StaticConfig::DEFAULT_EMBER_CLI_DIR)
