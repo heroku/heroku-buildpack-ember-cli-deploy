@@ -1,7 +1,7 @@
 # heroku-buildpack-ember-cli-deploy
-**NOTE**: This buildpack is an experimental OSS project. If you have Ember.js on Heroku feedback, please [submit some](http://help.heroku.com/new/single-page-apps).
+This buildpack was an experimental OSS project for running Ember.js fastboot applications on Heroku Dynos. It has since been *deprecated* and is *no longer supported*.
 
-You probably want to be using the [emberjs buildpack](https://github.com/heroku/heroku-buildpack-emberjs) unless you're composing buildpacks by hand manually.
+For an alternative for hosting Ember.js applications on Heroku, consider using the [`heroku/nodejs` buildpack](https://github.com/heroku/heroku-buildpack-nodejs) with the [`heroku/nginx` buildpack](https://github.com/heroku/heroku-buildpack-nginx).
 
 ## Intro
 
